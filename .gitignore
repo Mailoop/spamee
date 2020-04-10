@@ -1,0 +1,59 @@
+.bundle
+log/*.log
+tmp/**/*
+tmp/*
+doc/*
+*.swp
+.DS_Store
+.yardoc/
+public/assets
+.yardoc/
+doc/
+draft/
+spec/examples.txt
+nodes_modules/
+public/packs/*
+./db/views/test.sql
+
+node_modules/
+db/views/test.sql
+
+# Ignore application configuration
+/config/application.yml
+
+localhost.pem
+localhost.key.pem
+
+
+# dependencies
+dashboard.mailoop.com/node_modules
+
+# testing
+dashboard.mailoop.com//coverage
+
+# production
+dashboard.mailoop.com//build
+
+# misc
+dashboard.mailoop.com/.DS_Store
+dashboard.mailoop.com/.env.local
+dashboard.mailoop.com/.env.development.local
+dashboard.mailoop.com/.env.test.local
+dashboard.mailoop.com/.env.production.local
+
+dashboard.mailoop.com/npm-debug.log*
+dashboard.mailoop.com/yarn-debug.log*
+dashboard.mailoop.com/yarn-error.log*
+dashboard.mailoop.com/geckodriver.log
+
+dashboard.mailoop.com/chromedriver.log
+dashboard.mailoop.com/tests_output/*%
+dashboard.mailoop.com/sourceMaps
+public/packs-test/
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+coverage

@@ -1,0 +1,10 @@
+{
+  "name": "spamee",
+  "version": "0.0.1",
+  "description": "Mailoop internal bot",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@slack/bolt": "^2.0.0"
+  }
+}
