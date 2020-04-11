@@ -59,6 +59,15 @@ app.command('/new_feature', async ({ command, ack, say }) => {
             users: usersToInvite.join(","),
         });
         await say(`Channel: \#${channelName} created 🎉`);
+        await say({
+            blocks: [{
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `channel: <\#${channelName}> created 🎉`
+                }
+            }]
+        })
     } catch {
         console.log("Cant create channel")
         await say(`😓, It's seems we got something not expected was not able to create the channel.`);
