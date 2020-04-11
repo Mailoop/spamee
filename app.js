@@ -64,7 +64,7 @@ app.command('/new_feature', async ({ command, ack, say }) => {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `channel: <\#${channelName}> created 🎉`
+                    "text": `channel: \`#${channelName}\` created 🎉`
                 }
             }]
         })
