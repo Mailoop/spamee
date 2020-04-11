@@ -58,13 +58,12 @@ app.command('/new_feature', async ({ command, ack, say }) => {
             channel: create_channel.channel.id,
             users: usersToInvite.join(","),
         });
-        await say(`Channel: \#${channelName} created 🎉`);
         await say({
             blocks: [{
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `channel: \`#${channelName}\` created 🎉`
+                    "text": `Channel: \`#${channelName}\` created 🎉`
                 }
             }]
         })
