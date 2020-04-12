@@ -3,12 +3,79 @@
 const { App } = require('@slack/bolt');
 const { v4 } = require('uuid');
 const uuid = v4
+const mondaySdk = require("monday-sdk-js")
+const monday = mondaySdk();
+
+const mapItem = item => ({
+    id: item.id,
+    status: item.column_values.find(value => value.id == "status").text,
+})
+
+const fromObjectToSerie = (object, defaultObj = {}) => Object.keys(object)
+    .map(key => ({
+        ...defaultObj,
+        name: key,
+        value: object[key]
+    }))
+
+
+const sumBy = (toGroup, toCount) => (acc, val) => ({
+    ...acc,
+    [toGroup(val)]: (acc[toGroup(val)] || 0) + (toCount(val) || 0),
+})
+
+
+monday.setToken(process.env.MONDAY_TOKEN)
+const getItems = async () =>
+    await monday.api(`query { 
+        boards(ids: 451147539) { 
+            items(limit: 200) {
+                id 
+                column_values {
+                    id 
+                    value 
+                    text
+                }
+            }
+        } 
+    }`
+    ).then(res => res)
+
+
+
+const formatStep = step => (`•  \`${step.name}\`:  ${step.value}\n`)
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET
 });
+
+app.command('/feature_progression', async ({ command, ack, say }) => {
+    await ack();
+    await say('Ok, look at feature progression.')
+    const response = await getItems()
+    const items = response.data.boards[0].items
+    const result = fromObjectToSerie(
+        items.map(mapItem).reduce(sumBy(x => x.status, x => 1), {})
+    ).sort((a, b) => parseInt(a.name[0]) - parseInt(b.name[0]))
+    console.log(result)
+    await say({
+        blocks: [{
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": `
+        Here what i found:
+${result.map(formatStep).join("")}
+
+To get more result: https://mailoopsavetheworld.monday.com/boards/451147539/views/7237995
+        `
+}
+        }]
+    })
+
+})
 
 app.command('/spamee_present_yourself', async ({ command, ack, say }) => {
     // Acknowledge command request
