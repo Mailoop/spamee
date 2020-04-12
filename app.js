@@ -51,7 +51,7 @@ const app = new App({
     signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
-app.command('/feature_progression', async ({ command, ack, say }) => {
+app.command('/features_progression', async ({ command, ack, say }) => {
     await ack();
     await say('Ok, look at feature progression.')
     const response = await getItems()
