@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@octokit/rest": "^17.6.0",
     "@slack/bolt": "^2.0.0",
     "monday-sdk-js": "^0.0.16",
     "uuid": "^7.0.3"
