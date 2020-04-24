@@ -41,7 +41,6 @@ const main = async () => {
     console.log(
         result.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
             .filter(y => (y.labels || []).some(x => x.name.match(new RegExp('3:')) ))
-            .map(x => x.html_url)
             //.filter(isProgressionLabel)
             //.reduce(sumByToArray(x => x.name, x => 1), {})
             //.sort((a, b) => parseInt(b.label[0]) - parseInt(a.label[0]))

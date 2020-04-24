@@ -26,6 +26,10 @@ const asyncForEach = async (array, callback) =>  {
     }
 }
 
+const format_issue = issue => `${issue.title}
+    ${issue.html_url}
+    
+`
 
 const sumByToArray = (toGroup, toCount) => (acc, val, idx, array) => {
     const internal_acummulator = sumBy(toGroup, toCount)
@@ -87,15 +91,14 @@ ${issuesResume.map(formatStep).join("")}
 
 
     const delivering_issue = issues.filter(y => (y.labels || []).some(x => x.name.match(new RegExp('3:'))))
-        .map(x => x.html_url)
 
-    asyncForEach(delivering_issue, async issue_url => {
+    asyncForEach(delivering_issue, async issue => {
         await say({
             blocks: [{
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `${issue_url}`
+                    "text": format_issue(issue)
                 }
             }]
         })
