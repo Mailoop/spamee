@@ -20,6 +20,12 @@ const fromObjectToArray = (keyKeyName, valueKeyName, object) => Object.keys(obje
         [valueKeyName]: object[key]
     }))
 
+const asyncForEach = async (array, callback) =>  {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+
 
 const sumByToArray = (toGroup, toCount) => (acc, val, idx, array) => {
     const internal_acummulator = sumBy(toGroup, toCount)
@@ -41,20 +47,7 @@ const keepMaxBy = (maxFn) => (acc, val) => {
 
 const isProgressionLabel = x => x.name.match(new RegExp('0:|1:|2:|3:|4:'))
 
-const getItems = async () => {
-    const result = await octokit.request("/repos/Mailoop/app/issues?per_page=500").then(res => res.data);
-    return(
-        result.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
-            .map(y => (y.labels || [])
-                .filter(isProgressionLabel)
-                .reduce(keepMaxBy(x => parseInt(x.name[0])), (y.labels[0]))
-            )
-            .filter(x => x)
-            .filter(isProgressionLabel)
-            .reduce(sumByToArray(x => x.name, x => 1), {})
-            .sort((a, b) => parseInt(b.label[0]) - parseInt(a.label[0]))
-    )
-}
+const getItems = async () => await octokit.request("/repos/Mailoop/app/issues?per_page=500").then(res => res.data)
 
 const formatStep = step => (`•  \`${step.label}\`:  ${step.count}\n`)
 
@@ -67,7 +60,18 @@ const app = new App({
 app.command('/features_progression', async ({ command, ack, say }) => {
     await ack();
     await say('Ok, look at feature progression.')
-    const issuesResume = await getItems()
+
+    const issues = await getItems()
+    const issuesResume = issues.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
+        .map(y => (y.labels || [])
+            .filter(isProgressionLabel)
+            .reduce(keepMaxBy(x => parseInt(x.name[0])), (y.labels[0]))
+        )
+        .filter(x => x)
+        .filter(isProgressionLabel)
+        .reduce(sumByToArray(x => x.name, x => 1), {})
+        .sort((a, b) => parseInt(b.label[0]) - parseInt(a.label[0]))
+    
     await say({
         blocks: [{
             "type": "section",
@@ -76,13 +80,26 @@ app.command('/features_progression', async ({ command, ack, say }) => {
                 "text": `
         Here what i found:
 ${issuesResume.map(formatStep).join("")}
-
-To get more result: https://mailoopsavetheworld.monday.com/boards/451147539/views/7237995
         `
-}
+            }
         }]
     })
 
+
+    const delivering_issue = issues.filter(y => (y.labels || []).some(x => x.name.match(new RegExp('3:'))))
+        .map(x => x.html_url)
+
+    asyncForEach(delivering_issue, async issue_url => {
+        await say({
+            blocks: [{
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `${issue_url}`
+                }
+            }]
+        })
+    })
 })
 
 app.command('/spamee_present_yourself', async ({ command, ack, say }) => {

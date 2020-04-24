@@ -40,14 +40,11 @@ const main = async () => {
     const result = await octokit.request("/repos/Mailoop/app/issues?per_page=500").then(res => res.data);
     console.log(
         result.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
-            .map(y => (y.labels || [])
-                .filter(isProgressionLabel)
-                .reduce(keepMaxBy(x => parseInt(x.name[0])), (y.labels[0]))
-            )
-            .filter(x => x)
-            .filter(isProgressionLabel)
-            .reduce(sumByToArray(x => x.name, x => 1), {})
-            .sort((a, b) => parseInt(b.label[0]) - parseInt(a.label[0]))
+            .filter(y => (y.labels || []).some(x => x.name.match(new RegExp('3:')) ))
+            .map(x => x.html_url)
+            //.filter(isProgressionLabel)
+            //.reduce(sumByToArray(x => x.name, x => 1), {})
+            //.sort((a, b) => parseInt(b.label[0]) - parseInt(a.label[0]))
         )
 }
 main()
