@@ -68,7 +68,6 @@ app.command('/features_progression', async ({ command, ack, say }) => {
     await ack();
     await say('Ok, look at feature progression.')
     const issuesResume = await getItems()
-    const items = response.data.boards[0].items
     await say({
         blocks: [{
             "type": "section",
