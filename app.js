@@ -90,7 +90,7 @@ ${issuesResume.map(formatStep).join("")}
     })
 
 
-    const delivering_issue = issues.filter(y => (y.labels || []).some(x => x.name.match(new RegExp('3:'))))
+    const delivering_issue = issues.filter(y => (y.labels || []).some(x => x.name.match(new RegExp('4:'))))
 
     asyncForEach(delivering_issue, async issue => {
         await say({
