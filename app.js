@@ -156,6 +156,8 @@ app.command('/new_feature', async ({ command, ack, say }) => {
     console.log(command)
     await say(`It's time to give words to this idea 💡`);
 
+
+
     try {
         const create_channel = await app.client.conversations.create({
             token: process.env.SLACK_BOT_TOKEN,
@@ -169,10 +171,7 @@ app.command('/new_feature', async ({ command, ack, say }) => {
             users: usersToInvite.join(","),
         });
 
-        const issueBody = `
-            Created from Slack By Spamme @ 🎉
-            Slack Channel: [Desktop](slack://channel?team=${SLACK_WORKPLACE_ID}&id=${create_channel.channel.id}) [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})
-        `
+        const issueBody = `Created from Slack By Spamme @ 🎉 \n Slack Channel: [Desktop](slack://channel?team=${SLACK_WORKPLACE_ID}&id=${create_channel.channel.id}) [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})`
 
         const issue = await create_issue(issueName, issueBody)
 
