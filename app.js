@@ -171,9 +171,16 @@ app.command('/new_feature', async ({ command, ack, say }) => {
             users: usersToInvite.join(","),
         });
 
-        const issueBody = `Created from Slack By Spamme @ 🎉 \n Slack Channel: [Desktop](slack://channel?team=${SLACK_WORKPLACE_ID}&id=${create_channel.channel.id}) [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})`
+        const issueBody = `Created from Slack By Spamme@ 🎉 \n Slack Channel: [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})`
 
         const issue = await create_issue(issueName, issueBody)
+
+        await app.chat.postMessage({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: create_channel.channel.id,
+            text: `Github Issue: ${issue.html_url}`
+        });
+
 
         await say({
             blocks: [{
