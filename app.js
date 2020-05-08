@@ -182,7 +182,7 @@ app.command('/new_feature', async ({ command, ack, say }) => {
 Here some informations to help you: 
 Github Issue: ${issue.data.html_url}
 The feature flow 😉: https://user-images.githubusercontent.com/18465628/81449005-a1d22780-917f-11ea-9685-bc8214e61484.png
-The flow handbook: https://mailoop.sharepoint.com/:p:/r/sites/all/Documents%20partages/Mailoop/05.%20Tech/Hight%20Value%20Products%20Creation.pptx?d=w4ac21bfbed494fad9b3a0b9f1d6e07e4&csf=1&web=1&e=D0C9rd 
+The flow handbook: https://bit.ly/3bgb195 
 `
         });
 
