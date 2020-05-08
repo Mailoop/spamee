@@ -175,7 +175,7 @@ app.command('/new_feature', async ({ command, ack, say }) => {
 
         const issue = await create_issue(issueName, issueBody)
 
-        await app.chat.postMessage({
+        await app.client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: create_channel.channel.id,
             text: `Github Issue: ${issue.html_url}`
