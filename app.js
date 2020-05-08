@@ -7,9 +7,11 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_PERSONNAL_TOKEN
 });
 
+const SLACK_WORKPLACE_ID = "TCR9UEFKR"
+
 const uuid = v4
 
-const sumBy = (toGroup, toCount) => (acc, val) => ({
+ const sumBy = (toGroup, toCount) => (acc, val) => ({
     ...acc,
     [toGroup(val)]: (acc[toGroup(val)] || 0) + (toCount(val) || 0),
 })
@@ -167,7 +169,12 @@ app.command('/new_feature', async ({ command, ack, say }) => {
             users: usersToInvite.join(","),
         });
 
-        const issue = await create_issue(issueName)
+        const issueBody = `
+            Created from Slack By Spamme @ 🎉
+            Slack Channel: [Desktop](slack://channel?team=${SLACK_WORKPLACE_ID}&id=${create_channel.channel.id}) [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})
+        `
+
+        const issue = await create_issue(issueName, issueBody)
 
         await say({
             blocks: [{
