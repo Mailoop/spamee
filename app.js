@@ -178,7 +178,10 @@ app.command('/new_feature', async ({ command, ack, say }) => {
         await app.client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: create_channel.channel.id,
-            text: `Github Issue: ${issue.data.html_url}`
+            text: `
+Github Issue: ${issue.data.html_url}
+Think about the flow 😉: https://user-images.githubusercontent.com/18465628/81449005-a1d22780-917f-11ea-9685-bc8214e61484.png
+`
         });
 
 
