@@ -53,6 +53,18 @@ const isProgressionLabel = x => x.name.match(new RegExp('0:|1:|2:|3:|4:'))
 
 const getItems = async () => await octokit.request("/repos/Mailoop/app/issues?per_page=500").then(res => res.data)
 
+const createdIssueDefaultBody = `Spamme create this issue`
+const defaultAssignees = [""]
+
+const create_issue = async (title, body = createdIssueDefaultBody, assignees = defaultAssignees) => await octokit.issues.create({
+    owner: "Mailoop",
+    repo: "app",
+    labels: ["1: Definition Qualification"],
+    title,
+    body,
+    assignees
+});
+
 const formatStep = step => (`•  \`${step.label}\`:  ${step.count}\n`)
 
 // Initializes your app with your bot token and signing secret
@@ -136,6 +148,7 @@ app.command('/new_feature', async ({ command, ack, say }) => {
     await ack();
     const regex = /\W/gi;
     const featureName = command.text.replace(regex, '-').toLowerCase()
+    const issueName = command.text.replace(regex, ' ').toLowerCase()
     const channelName = `ft-${featureName}-${uuid().slice(0,7)}`
     const usersToInvite = ['UCQ66FCTD',command.user_id]
     console.log(command)
@@ -153,6 +166,9 @@ app.command('/new_feature', async ({ command, ack, say }) => {
             channel: create_channel.channel.id,
             users: usersToInvite.join(","),
         });
+
+        const issue = await create_issue(issueName)
+
         await say({
             blocks: [{
                 "type": "section",
