@@ -111,6 +111,7 @@ app.command('/features_progression', async ({ command, ack, say }) => {
         Here what i found:
 •  \`Open issues\`:  ${issues.length}
 •  \`Average openning time\`:  ${averageOpenningTime} day(s)
+By steps: 
 ${issuesResume.map(formatStep).join("")}
         `
             }
