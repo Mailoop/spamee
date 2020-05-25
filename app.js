@@ -126,7 +126,7 @@ ${issuesResume.map(formatStep).join("")}
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `⚠️ Some issues are unassigned
+                    "text": `⚠️ Warning : ${unassignedIssues.length} issues are unassigned. <https://github.com/Mailoop/app/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee| Github>
                     `
                 }
             }]
