@@ -115,7 +115,7 @@ ${issuesResume.map(formatStep).join("")}
             "text": {
                 "type": "mrkdwn",
                 "text": `Note to feature owner: 
-These features are on delivering, if they worked on an user account, mark them as done ✅ `
+These features are on delivering, if they work on an user account, mark them as done ✅ `
             }
         }]
     })
