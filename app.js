@@ -31,7 +31,8 @@ const asyncForEach = async (array, callback) =>  {
 const formatAssignee = assignee => `${assignee.login}`
 
 const format_issue = issue => `<${issue.html_url}|*${issue.title}*>
-    ${issue.assignees.map(formatAssignee).join(", ")}
+${issue.assignees.map(formatAssignee).join(", ")}
+
     
 `
 
