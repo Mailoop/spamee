@@ -127,7 +127,6 @@ ${issuesResume.map(formatStep).join("")}
                 "text": {
                     "type": "mrkdwn",
                     "text": `⚠️ Some issues are unassigned
-                    ${unassignedIssues.map(issue => `${linkedIssueTitle(issue)}\n`)}
                     `
                 }
             }]
