@@ -106,6 +106,17 @@ ${issuesResume.map(formatStep).join("")}
 
     const delivering_issue = issues.filter(y => (y.labels || []).some(x => x.name.match(new RegExp('4:'))))
 
+    await say({
+        blocks: [{
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": `Note to feature owner: 
+These features are on delivering, if they worked on an user account, mark them as done ✅ `
+            }
+        }]
+    })
+
     asyncForEach(delivering_issue, async issue => {
         await say({
             blocks: [{
