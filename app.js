@@ -33,7 +33,9 @@ const asyncForEach = async (array, callback) =>  {
 const daysSince = date => Math.floor((new Date() - date) / milisecondsByDay)
 const formatAssignee = assignee => `${assignee.login}`
 
-const format_issue = issue => `<${issue.html_url}|*${issue.title}*>
+const linkedIssueTitle = issue => `<${issue.html_url}|* ${ issue.title }*>`
+
+const format_issue = issue => `${linkedIssueTitle(issue)}
 ${issue.assignees.map(formatAssignee).join(", ")}
 Open ${daysSince(Date.parse(issue.created_at))} day(s) ago
 
@@ -86,14 +88,13 @@ app.command('/features_progression', async ({ command, ack, say }) => {
     await ack();
     await say('Ok, look at feature progression.')
 
-    const issues = await getItems()
+    const rawIssues = await getItems()
+    const issues = rawIssues.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
     const issuesCount = issues.length
     const averageOpenningTime = Math.floor(
         (issues.reduce((acc, issue) => acc + (new Date() - Date.parse(issue.created_at)), 0)) / (issuesCount * milisecondsByDay)
     )
-    const issuesResume = issues.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
-
-        .map(y => (y.labels || [])
+    const issuesResume = issues.map(y => (y.labels || [])
             .filter(isProgressionLabel)
             .reduce(keepMaxBy(x => parseInt(x.name[0])), (y.labels[0]))
         )
@@ -117,6 +118,22 @@ ${issuesResume.map(formatStep).join("")}
             }
         }]
     })
+
+    const unassignedIssues = issues.filter(issue.assignees.length == 0)
+    if (unassignedIssues.length > 0) {
+        await say({
+            blocks: [{
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `⚠️ Some issues are unassigned
+                    ${unassignedIssues.map(issue => `${linkedIssueTitle(issue)}\n`)}
+                    `
+                }
+            }]
+        })
+
+    }
 
 
     const delivering_issue = issues.filter(y => (y.labels || []).some(x => x.name.match(new RegExp('4:'))))
