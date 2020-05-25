@@ -7,6 +7,8 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_PERSONNAL_TOKEN
 });
 
+const milisecondsByDay = (24 * 3600 * 1000)
+
 const SLACK_WORKPLACE_ID = "TCR9UEFKR"
 
 const uuid = v4
@@ -28,7 +30,7 @@ const asyncForEach = async (array, callback) =>  {
     }
 }
 
-const daysSince = date => Math.floor((new Date() - date) / (24 * 3600 * 1000))
+const daysSince = date => Math.floor((new Date() - date) / milisecondsByDay)
 const formatAssignee = assignee => `${assignee.login}`
 
 const format_issue = issue => `<${issue.html_url}|*${issue.title}*>
@@ -85,7 +87,12 @@ app.command('/features_progression', async ({ command, ack, say }) => {
     await say('Ok, look at feature progression.')
 
     const issues = await getItems()
+    const issuesCount = issues.length
+    const averageOpenningTime = Math.floor(
+        (issues.reduce((acc, issue) => acc + (new Date() - Date.parse(issue.created_at)), 0)) / (issuesCount * milisecondsByDay)
+    )
     const issuesResume = issues.filter(x => x.repository_url == 'https://api.github.com/repos/Mailoop/app')
+
         .map(y => (y.labels || [])
             .filter(isProgressionLabel)
             .reduce(keepMaxBy(x => parseInt(x.name[0])), (y.labels[0]))
@@ -102,6 +109,8 @@ app.command('/features_progression', async ({ command, ack, say }) => {
                 "type": "mrkdwn",
                 "text": `
         Here what i found:
+•  \`Open issues\`:  ${issues.length}
+•  \`Average openning time\`:  ${averageOpenningTime} day(s)
 ${issuesResume.map(formatStep).join("")}
         `
             }
