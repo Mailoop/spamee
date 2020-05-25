@@ -119,7 +119,7 @@ ${issuesResume.map(formatStep).join("")}
         }]
     })
 
-    const unassignedIssues = issues.filter(issue.assignees.length == 0)
+    const unassignedIssues = issues.filter(issue => issue.assignees.length == 0)
     if (unassignedIssues.length > 0) {
         await say({
             blocks: [{
