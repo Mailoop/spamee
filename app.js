@@ -30,8 +30,7 @@ const asyncForEach = async (array, callback) =>  {
 
 const formatAssignee = assignee => `${assignee.login}`
 
-const format_issue = issue => `${issue.title}
-    ${issue.html_url}
+const format_issue = issue => `${issue.title} [github](${issue.html_url})
     Assign to: ${issue.assignees.map(formatAssignee)}
     
 `
