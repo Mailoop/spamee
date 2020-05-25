@@ -28,10 +28,12 @@ const asyncForEach = async (array, callback) =>  {
     }
 }
 
+const daysSince = date => Math.floor((new Date() - date) / (24 * 3600 * 1000))
 const formatAssignee = assignee => `${assignee.login}`
 
 const format_issue = issue => `<${issue.html_url}|*${issue.title}*>
 ${issue.assignees.map(formatAssignee).join(", ")}
+Open ${daysSince(Date.parse(issue.created_at))} day(s) ago
 
     
 `
