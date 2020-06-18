@@ -244,7 +244,8 @@ app.command('/new_feature', async ({ command, ack, say }) => {
         confirmationText = "Channel: \`#${channelName}\` created 🎉"
 
         } else {
-            confirmationText = `Issue: ${issue.data.html_url}  created 🎉`
+            confirmationText = `Issue: ${issueName} created 
+${issue.data.html_url}  🎉`
         }
 
         await say({
