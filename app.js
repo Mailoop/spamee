@@ -185,12 +185,19 @@ Spamee
     }]})
 })
 
+const defaultIssueBody = `Created from Slack By Spamme@ 🎉
+Keep in mind the flow 😉 
+The handbook: https://bit.ly/3bgb195
+<img width="841" alt="image" src="https://user-images.githubusercontent.com/18465628/85058484-7a20a700-b1a2-11ea-96be-bc2e6ad5f4e6.png">
+`
 
 
 app.command('/new_feature', async ({ command, ack, say }) => {
     // Acknowledge command request
     await ack();
     const regex = /\W/gi;
+    const channelOption = /\ --channel /gi;
+    const withChannel = channelOption.test(command.text)
     const featureName = command.text.replace(regex, '-').toLowerCase()
     const issueName = command.text.replace(regex, ' ').toLowerCase()
     const channelName = `ft-${featureName}-${uuid().slice(0,7)}`
@@ -201,43 +208,55 @@ app.command('/new_feature', async ({ command, ack, say }) => {
 
 
     try {
-        const create_channel = await app.client.conversations.create({
-            token: process.env.SLACK_BOT_TOKEN,
-            name: channelName,
-            user_ids: command.user_id,
-        });
-        console.log(create_channel)
-        const invite_members = await app.client.conversations.invite({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: create_channel.channel.id,
-            users: usersToInvite.join(","),
-        });
+        let issueBody = ""
+        if (withChannel) {
+            const create_channel = await app.client.conversations.create({
+                token: process.env.SLACK_BOT_TOKEN,
+                name: channelName,
+                user_ids: command.user_id,
+            });
+            console.log(create_channel)
+            const invite_members = await app.client.conversations.invite({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: create_channel.channel.id,
+                users: usersToInvite.join(","),
+            });
 
-        const issueBody = `Created from Slack By Spamme@ 🎉 \n Slack Channel: [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})`
+            issueBody = `Created from Slack By Spamme@ 🎉 \n Slack Channel: [Web](https://app.slack.com/client/${SLACK_WORKPLACE_ID}/${create_channel.channel.id})`
+        } else {
+            issueBody = defaultIssueBody
+        }
 
         const issue = await create_issue(issueName, issueBody)
+        let confirmationText = ""
 
-        await app.client.chat.postMessage({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: create_channel.channel.id,
-            text: `
-Here some informations to help you: 
-Github Issue: ${issue.data.html_url}
-The feature flow 😉: https://user-images.githubusercontent.com/18465628/81449005-a1d22780-917f-11ea-9685-bc8214e61484.png
-The flow handbook: https://bit.ly/3bgb195 
-`
-        });
+        if (withChannel) {
+            await app.client.chat.postMessage({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: create_channel.channel.id,
+                text: `
+            Here some informations to help you: 
+            Github Issue: ${issue.data.html_url}
+            The feature flow 😉: https://user-images.githubusercontent.com/18465628/81449005-a1d22780-917f-11ea-9685-bc8214e61484.png
+            The flow handbook: https://bit.ly/3bgb195 
+            `
+        })
+        confirmationText = "Channel: \`#${channelName}\` created 🎉"
 
+        } else {
+            confirmationText = `Issue: ${issue.data.html_url}  created 🎉`
+        }
 
         await say({
             blocks: [{
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `Channel: \`#${channelName}\` created 🎉`
+                    "text": confirmationText,
                 }
             }]
         })
+
     } catch {
         console.log("Cant create channel")
         await say(`😓, It's seems we got something not expected was not able to create the channel.`);
