@@ -266,6 +266,33 @@ ${issue.data.html_url}  🎉`
 });
 
 
+const ramdomElement = (array) => array[Math.floor(Math.random() * array.length)]
+
+app.command('/yes_yes', async ({ command, ack, say }) => {
+    // Acknowledge command request
+    await ack();
+    const typicalAnswer = [ 
+        "Yes, Yes, of course",
+        "Oui, oui c'est bon",
+        "Will gonna do it .",
+        "D'accord d'accord",
+        "Yes got it",
+    ]
+
+        await say({
+            blocks: [{
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ramdomElement(typicalAnswer),
+                }
+            }]
+        })
+});
+
+
+
+
 app.message('hello', async ({ message, say }) => {
     // say() sends a message to the channel where the event was triggered
     await ack();
