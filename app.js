@@ -7,6 +7,8 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_PERSONNAL_TOKEN
 });
 
+const setTechRequestFlow = require("./TechRequest")
+
 const milisecondsByDay = (24 * 3600 * 1000)
 
 const SLACK_WORKPLACE_ID = "TCR9UEFKR"
@@ -67,14 +69,36 @@ const getItems = async () => await octokit.request("/repos/Mailoop/app/issues?pe
 const createdIssueDefaultBody = `Spamme create this issue`
 const defaultAssignees = [""]
 
-const create_issue = async (title, body = createdIssueDefaultBody, assignees = defaultAssignees) => await octokit.issues.create({
-    owner: "Mailoop",
-    repo: "app",
-    labels: ["1: Definition Qualification"],
+const issueDefaultBodyHeader = `Created from Slack By Spamme@ 🎉
+Keep in mind the flow 😉 [Here the handbook](https://bit.ly/3bgb195)
+<img width="841" alt="image" src="https://user-images.githubusercontent.com/18465628/85058484-7a20a700-b1a2-11ea-96be-bc2e6ad5f4e6.png">
+`
+
+const create_issue = async (
+    title, 
+    body = createdIssueDefaultBody,
+    labels = ["1: Definition Qualification"],
+    assignees = defaultAssignees) => await octokit.issues.create({
+        owner: "Mailoop",
+        repo: "app",
+        labels,
+        title,
+        body,
+        assignees
+    });
+
+const create_issue_with_body_header = async (
     title,
-    body,
-    assignees
-});
+    body_core = "",
+    labels = ["1: Definition Qualification"],
+    assignees = defaultAssignees) => create_issue(
+        title, 
+        issueDefaultBodyHeader + body_core,
+        labels,
+        assignees
+    )
+;
+
 
 const formatStep = step => (`•  \`${step.label}\`:  ${step.count}\n`)
 
@@ -185,11 +209,6 @@ Spamee
     }]})
 })
 
-const defaultIssueBody = `Created from Slack By Spamme@ 🎉
-Keep in mind the flow 😉 
-The handbook: https://bit.ly/3bgb195
-<img width="841" alt="image" src="https://user-images.githubusercontent.com/18465628/85058484-7a20a700-b1a2-11ea-96be-bc2e6ad5f4e6.png">
-`
 
 
 app.command('/new_feature', async ({ command, ack, say }) => {
@@ -290,6 +309,7 @@ app.command('/yes_yes', async ({ command, ack, say }) => {
         })
 });
 
+setTechRequestFlow(app, create_issue_with_body_header)
 
 
 
@@ -299,10 +319,11 @@ app.message('hello', async ({ message, say }) => {
     await say("Hey i'm s");
 });
 
+// Stop forwarding events
+
 (async () => {
     // Start your app
     await app.start(process.env.PORT || 3000);
-
+    
     console.log('⚡️ Bolt app is running!');
 })();
-
