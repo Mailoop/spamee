@@ -1,4 +1,4 @@
-const viewid = "tech_request_view";
+const Handlebars = require("handlebars");
 
 const inputValue = (input) => {
   switch (input.type) {
@@ -9,40 +9,79 @@ const inputValue = (input) => {
   }
 };
 
+const partials = [
+  {
+    name: "githubIssueHeader",
+    template: `Created from Slack By Spamme@ 🎉
+Keep in mind the flow 😉 [Here the handbook](https://bit.ly/3bgb195)
+<img width="841" alt="image" src="https://user-images.githubusercontent.com/18465628/85058484-7a20a700-b1a2-11ea-96be-bc2e6ad5f4e6.png">
+`,
+  },
+  {
+    name: "slackAckMessage",
+    template: "Tech request received, working on it 🤙",
+  },
+  {
+    name: "slackDoneMessage",
+    template: "Tech request received, working on it 🤙",
+  },
+  {
+    name: "defaultIssueTemplate",
+    template: `{{>githubIssueHeader}}
+{{#if client}}**Client:** {{client}}{{/if}}
+{{#if email_address}}**User:** {{email_address}}{{/if}}
+**Description**
+{{description}}`,
+  },
+  {
+    name: "defaultSlackAnswer",
+    template: `<{{issue.data.html_url}} | {{responses.title}}>
+
+Nb: 🗒️ Screenshot are helpfull 😉 (Here or on Github)
+Thanks for calling ✋
+`,
+  },
+];
+
+partials.forEach((x) => {
+  Handlebars.registerPartial(x.name, x.template);
+});
+
 const config = {
-  ackMessage: "Tech request received, working on it 🤙",
-  thanksMessage: `Nb: 🗒️ Screenshot are helpfull 😉 (Here or on Github)
-Thanks for calling ✋`,
-  commonLabels: ["1: Definition Qualification"],
+  defaultChannelId: "CCQPRDCGH",
+  slackRequestAck: "{{> slackAckMessage}}",
+  defaultTemplate: "{{> defaultIssueTemplate}}",
+  defaultSlackAnswer: "{{> defaultSlackAnswer}}",
   categories: {
     feature: {
-      ackPrefix: "💡Feature Request Created",
-      labels: ["Cat: Feature"],
+      answerTemplate: "💡Feature Request Created {{> defaultSlackAnswer}}",
+      labels: ["1: Definition Qualification", "Cat: Feature"],
       selectText: "💡 Feature or new product to create",
       assignees: [],
     },
     bug: {
-      ackPrefix: "🐛Bug Request Created",
-      labels: ["Cat: Bug"],
+      answerTemplate: "🐛 Bug Request Created {{> defaultSlackAnswer}}",
+      labels: ["1: Definition Qualification", "Cat: Bug"],
       selectText: "🐛 Bug (something do not work anymore)",
       assignees: [],
     },
     data: {
-      ackPrefix: "📊 Data Request",
-      labels: ["Cat: Data Request"],
+      answerTemplate: "📊 Data Request {{> defaultSlackAnswer}}",
+      labels: ["1: Definition Qualification", "Cat: Data Request"],
       selectText:
         "📊 Data Information for customer success (Feedback stats, ect...)",
       assignees: [],
     },
     typo: {
-      ackPrefix: "🎨 Typo / UI improvement request created",
-      labels: ["Cat: Typo/UI"],
+      answerTemplate:
+        "🎨 Typo / UI improvement request created {{> defaultSlackAnswer}}",
+      labels: ["1: Definition Qualification", "Cat: Typo/UI"],
       selectText: "🎨 Typo/UI improvement",
       assignees: [],
     },
     other: {
-      ackPrefix: "❓ Request created",
-      labels: ["Cat: Miscellaneous"],
+      answerTemplate: "❓ Request created {{> defaultSlackAnswer}}",
+      labels: ["1: Definition Qualification", "Cat: Miscellaneous"],
       selectText: "❓ Other request",
       assignees: [],
     },
@@ -61,25 +100,25 @@ const cleanInput = (rawInput) =>
     {}
   );
 
-  
-
 const getView = (state) => {
   const headBlock = [
     {
       type: "actions",
       block_id: "categoryRefName",
-      elements: [{
-        type: "radio_buttons",
-        action_id: "categoryRefName",
-        options: categoriesArr.map((category) => ({
-          text: {
-            type: "plain_text",
-            text: category.selectText,
-            emoji: true,
-          },
-          value: category.refName,
-        })),
-      }],
+      elements: [
+        {
+          type: "radio_buttons",
+          action_id: "categoryRefName",
+          options: categoriesArr.map((category) => ({
+            text: {
+              type: "plain_text",
+              text: category.selectText,
+              emoji: true,
+            },
+            value: category.refName,
+          })),
+        },
+      ],
     },
     {
       type: "input",
@@ -99,26 +138,27 @@ const getView = (state) => {
     },
   ];
 
-  let coreBlock = []
+  let coreBlock = [];
 
   if (state.selectedCategory == "bug") {
-    coreBlock = [{
-      type: "input",
-      optional: true,
-      block_id: "client",
-      element: {
-        type: "plain_text_input",
-        action_id: "client",
-        placeholder: {
+    coreBlock = [
+      {
+        type: "input",
+        optional: true,
+        block_id: "client",
+        element: {
+          type: "plain_text_input",
+          action_id: "client",
+          placeholder: {
+            type: "plain_text",
+            text: "Ex: Dalkia",
+          },
+        },
+        label: {
           type: "plain_text",
-          text: "Ex: Dalkia",
+          text: "Client",
         },
       },
-      label: {
-        type: "plain_text",
-        text: "Client",
-      },
-    },
       {
         type: "input",
         optional: true,
@@ -135,9 +175,9 @@ const getView = (state) => {
           type: "plain_text",
           text: "User Email",
         },
-      }]
+      },
+    ];
   }
-
 
   const footerBlock = [
     {
@@ -161,7 +201,7 @@ const getView = (state) => {
     },
   ];
 
-  const blocks = [...headBlock, ...coreBlock, ...footerBlock]
+  const blocks = [...headBlock, ...coreBlock, ...footerBlock];
 
   return {
     private_metadata: state.metadata,
@@ -187,13 +227,12 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
 
     const metadata = JSON.stringify({
       channel_id: body.channel_id,
-    })
+    });
 
     try {
       const result = await app.client.views.open({
         token: context.botToken,
         trigger_id: body.trigger_id,
-
         view: getView({ metadata: metadata }),
       });
     } catch (error) {
@@ -201,18 +240,54 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
     }
   });
 
-  app.action('categoryRefName', async ({ ack, body, context }) => {
+  app.command("/new_feature", async ({ ack, body, context }) => {
+    // Acknowledge the command request
+    await ack();
+
+    const metadata = JSON.stringify({
+      channel_id: body.channel_id,
+    });
+
+    try {
+      const result = await app.client.views.open({
+        token: context.botToken,
+        trigger_id: body.trigger_id,
+        view: getView({ metadata: metadata }),
+      });
+    } catch (error) {
+      console.error(error.data);
+    }
+  });
+
+  app.shortcut("techRequest", async ({ shortcut, ack, context, client }) => {
+    try {
+      // Acknowledge shortcut request
+      await ack();
+      const metadata = JSON.stringify({
+        channel_id: config.defaultChannelId,
+      });
+
+      // Call the views.open method using one of the built-in WebClients
+      const result = await client.views.open({
+        token: context.botToken,
+        trigger_id: shortcut.trigger_id,
+        view: getView({ metadata: metadata }),
+        // The token you used to initialize your app is stored in the `context` object
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  app.action("categoryRefName", async ({ ack, body, context }) => {
     // Acknowledge the button request
     await ack();
-    console.log(body.view.private_metadata)
-    const selectedCategory = body.actions[0].selected_option.value
-
-    const incomingMetadata = JSON.parse(body.view.private_metadata)
-
+    const selectedCategory = body.actions[0].selected_option.value;
+    const incomingMetadata = JSON.parse(body.view.private_metadata);
     const outgoingMetadata = JSON.stringify({
       ...incomingMetadata,
       category: selectedCategory,
-    })
+    });
 
     try {
       const result = await app.client.views.update({
@@ -220,9 +295,12 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
         // Pass the view_id
         view_id: body.view.id,
         // View payload with updated blocks
-        view: getView({ metadata: outgoingMetadata, selectedCategory: selectedCategory })})
-    }
-    catch (error) {
+        view: getView({
+          metadata: outgoingMetadata,
+          selectedCategory: selectedCategory,
+        }),
+      });
+    } catch (error) {
       console.error(error);
     }
   });
@@ -231,7 +309,7 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
     // Acknowledge the view_submission event
     await ack();
 
-    const metadata = JSON.parse(view.private_metadata)
+    const metadata = JSON.parse(view.private_metadata);
 
     const postOnChannel = async (args) =>
       await app.client.chat.postMessage({
@@ -240,33 +318,39 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
         ...args,
       });
 
-    await postOnChannel({
-      text: config.ackMessage,
-    });
-
     const values = view.state.values;
     const responses = cleanInput(values);
-    console.log(metadata)
-    const categoryRefName = responses.categoryRefName;
     const category = findCategorie(metadata.category);
+    let state = {
+      responses: responses,
+      category: category,
+    };
 
-    const bodyCore = `
-      Client: ${responses.client}
-      User: ${responses.user_email}
-${responses.description || ""}
-    `;
+    await postOnChannel({
+      text: Handlebars.compile(config.slackRequestAck)(state),
+    });
 
-    const labels = [...config.commonLabels, ...category.labels];
+    const githubIssueTemplate = category.template || config.defaultTemplate;
 
-    const issue = await create_issue(responses.title, bodyCore, labels);
+    const issue = await create_issue(
+      responses.title,
+      Handlebars.compile(githubIssueTemplate)(responses),
+      [...category.labels]
+    );
+
+    state = {
+      issue: issue,
+      responses: responses,
+      category: category,
+    };
+
+    const slackTemplateAnswer =
+      category.answerTemplate || config.defaultSlackAnswer;
 
     // Message the user
     try {
       await await postOnChannel({
-        text: `${category.ackPrefix} <${issue.data.html_url} | ${responses.title}>
-
-${config.thanksMessage}
-        `,
+        text: Handlebars.compile(slackTemplateAnswer)(state),
       });
     } catch (error) {
       console.error(error);
