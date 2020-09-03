@@ -22,10 +22,6 @@ Keep in mind the flow 😉 [Here the handbook](https://bit.ly/3bgb195)
     template: "Tech request received, working on it 🤙",
   },
   {
-    name: "slackDoneMessage",
-    template: "Tech request received, working on it 🤙",
-  },
-  {
     name: "defaultIssueTemplate",
     template: `{{>githubIssueHeader}}
 {{#if client}}**Client:** {{client}}{{/if}}
@@ -55,19 +51,19 @@ const config = {
   categories: {
     feature: {
       answerTemplate: "💡Feature Request Created {{> defaultSlackAnswer}}",
-      labels: ["1: Definition Qualification", "Cat: Feature"],
+      labels: ["Cat: Feature"],
       selectText: "💡 Feature or new product to create",
       assignees: [],
     },
     bug: {
       answerTemplate: "🐛 Bug Request Created {{> defaultSlackAnswer}}",
-      labels: ["1: Definition Qualification", "Cat: Bug"],
+      labels: ["Cat: Bug"],
       selectText: "🐛 Bug (something do not work anymore)",
       assignees: [],
     },
     data: {
       answerTemplate: "📊 Data Request {{> defaultSlackAnswer}}",
-      labels: ["1: Definition Qualification", "Cat: Data Request"],
+      labels: ["Cat: Data Request"],
       selectText:
         "📊 Data Information for customer success (Feedback stats, ect...)",
       assignees: [],
@@ -75,13 +71,13 @@ const config = {
     typo: {
       answerTemplate:
         "🎨 Typo / UI improvement request created {{> defaultSlackAnswer}}",
-      labels: ["1: Definition Qualification", "Cat: Typo/UI"],
+      labels: ["Cat: Typo/UI"],
       selectText: "🎨 Typo/UI improvement",
       assignees: [],
     },
     other: {
       answerTemplate: "❓ Request created {{> defaultSlackAnswer}}",
-      labels: ["1: Definition Qualification", "Cat: Miscellaneous"],
+      labels: ["Cat: Miscellaneous"],
       selectText: "❓ Other request",
       assignees: [],
     },

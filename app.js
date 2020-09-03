@@ -13,7 +13,7 @@ const app = new App({
 const create_issue = async (
   title,
   body = `Spamme create this issue`,
-  labels = ["1: Definition Qualification"],
+  labels = [],
   assignees = [""]
   ) =>
   await octokit.issues.create({
