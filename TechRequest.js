@@ -13,8 +13,10 @@ const partials = [
   {
     name: "githubIssueHeader",
     template: `Created from Slack By Spamme@ 🎉
-Keep in mind the flow 😉 [Here the handbook](https://bit.ly/3bgb195)
-<img width="841" alt="image" src="https://user-images.githubusercontent.com/18465628/85058484-7a20a700-b1a2-11ea-96be-bc2e6ad5f4e6.png">
+    Keep in mind the flow 😉 [Here the handbook](https://bit.ly/3bgb195)
+    <img width="841" alt="image" src="https://usxer-images.githubusercontent.com/18465628/85058484-7a20a700-b1a2-11ea-96be-bc2e6ad5f4e6.png">
+    #### Helpfull resources : 🤝
+    Design toolkit: 🎨  [Here](https://bit.ly/3b1Txza)
 `,
   },
   {
