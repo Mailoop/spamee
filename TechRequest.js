@@ -349,9 +349,11 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
 
     console.log("@@@Issue", issue)
 
+    const { number, title } = issue.data
+
     postTask({
-      issue_number: issue.issue_number,
-      name: issue.title
+      issue_number: number,
+      name: title
     })
 
     state = {
