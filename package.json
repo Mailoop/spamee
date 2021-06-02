@@ -7,6 +7,7 @@
   "dependencies": {
     "@octokit/rest": "^17.6.0",
     "@slack/bolt": "^2.0.0",
+    "axios": "^0.21.1",
     "handlebars": "^4.7.6",
     "monday-sdk-js": "^0.0.16",
     "smee-client": "^1.1.0",

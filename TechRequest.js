@@ -1,4 +1,15 @@
 const Handlebars = require("handlebars");
+const axios = require("axios");
+
+const newTaskUrl = "https://prod-17.francecentral.logic.azure.com:443/workflows/042f34490dea4c9bbc1d17730000dd6e/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0YfCwhmF0hlOFMAhyNE2EA7_42wGoyVdOsKK0jLOP7U"
+const postTask = (body) => {
+  axios.post(newTaskUrl, body)
+  .then(response => response.data)
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
 
 const inputValue = (input) => {
   switch (input.type) {
@@ -335,6 +346,11 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
       Handlebars.compile(githubIssueTemplate)(responses),
       [...category.labels]
     );
+
+    postTask({
+      issue_number: issue.issue_number,
+      name: issue.title
+    })
 
     state = {
       issue: issue,
