@@ -347,6 +347,8 @@ module.exports = setTechRequestFlow = (app, create_issue) => {
       [...category.labels]
     );
 
+    console.log("@@@Issue", issue)
+
     postTask({
       issue_number: issue.issue_number,
       name: issue.title
